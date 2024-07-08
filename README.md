@@ -1,3 +1,6 @@
+# Change from the uptream
+Output path is now formmated as JSONATA-style path. Arrays are in the format of x[0] instead x.0. Key name with space or dash is quoted with backslash. 
+
 # vim-jsonpath
 A Vim plugin which provides ways of navigating JSON document buffers.
 
