@@ -279,6 +279,26 @@ endfunction "}}}
 function! jsonpath#echo(...) "{{{
   echo 'Parsing buffer...' | redraw
   let path = jsonpath#scan_buffer([], line('.'), col('.'), get(a:, 1, 1))
+  " Modify the path joining logic here
+  let formatted_stack = []
+  for item in path
+	  if type(item) == v:t_number
+		  if len(formatted_stack) > 0
+			  let prev_element = remove(formatted_stack, -1)
+			  call add(formatted_stack, printf('%s[%d]',prev_element,item))
+		  else
+			  call add(formatted_stack, printf("$[%d]",item))
+		  endif
+	  else
+		  " Check if the item is a string and contains non-alphanumeric characters
+		  if type(item) == v:t_string && match(item, '[^0-9A-Za-z_]') != -1
+			  let item = '`' . item . '`'
+		  endif
+		  call add(formatted_stack, item)
+	  endif
+  endfor
+  let path= copy(formatted_stack)
+
   let joined = join(path, g:jsonpath_delimeter)
   if len(path)
     if exists('g:jsonpath_register')
